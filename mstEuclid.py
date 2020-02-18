@@ -2,13 +2,14 @@ import sys
 import math
 
 class Data(object):
-    def __init__(self, distance, p1, p2):
+    def __init__(self, distance, p1, p2,key):
+        self.key = key
         self.distance = distance
         self.p1 = p1
         self.p2 = p2
 
     def show_all(self):
-        print("distance: %s p1: %s p2: %s" % (self.distance, self.p1, self.p2))
+        print("distance: %s p1: %s p2: %s key: %s" % (self.distance, self.p1, self.p2, self.key))
 
 def distance(p1,p2):
     #x=[0] y=[1]
@@ -49,18 +50,43 @@ adj_matrix = [[0 for i in range(n_point)] for j in range(n_point)]
 for i in range(len(adj_matrix)):
     print(adj_matrix[i])
 
+#prints out lower trinagle without zeros
+for i in range(len(adj_matrix)):
+    print(adj_matrix[i][:len(adj_matrix)-(len(adj_matrix)-i)])
+
+
+key =0
 for i in range(n_point): # i and j are points
     for j in range(n_point):
-        adj_matrix[i][j] = Data(distance(points[i],points[j]),points[i],points[j])
-        #print(" %s  %s  %s " % (adj_matrix[i][j].distance,adj_matrix[i][j].p1, adj_matrix[i][j].p2))
+        adj_matrix[i][j] = Data(distance(points[i],points[j]),points[i],points[j],key)
+        key+=1
         adj_matrix[i][j].show_all()
     # print(adj_matrix[i].distance)
     print("\n")
 
+#put everything in one array then sort, lower triangle
+W = []
+for i in range(len(adj_matrix)): # add weights to lower triangle
+    for j in range(len(adj_matrix)-(len(adj_matrix)-i)):
+        W.append(adj_matrix[i][j])
 
+
+
+
+# a set that contain all edges
+# for each vertex v in G.V(the vertex with):
+#       make a set (v)
+#for each edge (u,v) in G.E ordered by increasing order by weight(u,v):
+#   if find_set(u) != find_set(v):
+#   A = A union {(u,v)}
+#   union(u,v)
+#return A
 def kruskal():
-    A = []# a set that contain all 
-    pass
+    A = [] # contains all edges
+    T = [] # contain all points
+
+
+
 
 def main():
     pass
