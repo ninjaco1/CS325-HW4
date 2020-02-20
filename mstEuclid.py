@@ -11,6 +11,9 @@ class Data(object):
     def show_all(self):
         print("distance: %s p1: %s p2: %s key: %s" % (self.distance, self.p1, self.p2, self.key))
 
+    def format(self):
+        print("%s - %s        %s"%(self.p1, self.p2, self.distance))
+
 def distance(p1,p2):
     #x=[0] y=[1]
     x = p1[0] - p2[0]
@@ -53,7 +56,7 @@ def mergesort(array):
 
 
 # to show command line arguments
-print("Number of arguments:", len(sys.argv), "arguments.")
+#print("Number of arguments:", len(sys.argv), "arguments.")
 print("Argument List:", str(sys.argv))
 text_name = str(sys.argv[1])
 #print (text_name)
@@ -75,16 +78,14 @@ for num in range(n_point):
     points.append([int(i) for i in lines[num+1].split() if i.isdigit()])
 #print(points)
 
-
-
 # making the adjaceny matrix
 adj_matrix = [[0 for i in range(n_point)] for j in range(n_point)]
 # for i in range(len(adj_matrix)):
 #     print(adj_matrix[i])
 
 #prints out lower trinagle without zeros
-for i in range(len(adj_matrix)):
-    print(adj_matrix[i][:len(adj_matrix)-(len(adj_matrix)-i)])
+# for i in range(len(adj_matrix)):
+#     print(adj_matrix[i][:len(adj_matrix)-(len(adj_matrix)-i)])
 
 
 key =0
@@ -93,7 +94,7 @@ for i in range(n_point): # i and j are points
         adj_matrix[i][j] = Data(distance(points[i],points[j]),points[i],points[j],key)
         key+=1
         #adj_matrix[i][j].show_all()
-    # print(adj_matrix[i].distance)
+    #print(adj_matrix[i].distance)
     #print("\n")
 
 #put everything in one array then sort, lower triangle
@@ -107,8 +108,8 @@ for i in range(len(adj_matrix)): # add weights to lower triangle
 
 
 print("")
-for i in range(len(W)):
-    W[i].show_all()
+# for i in range(len(W)):
+#     W[i].show_all()
 # a set that contain all edges
 # for each vertex v in G.V(the vertex with):
 #       make a set (v)
@@ -117,25 +118,63 @@ for i in range(len(W)):
 #   A = A union {(u,v)}
 #   union(u,v)
 #return A
-def kruskal(W,points):
-    A = [] # contains all edges,key
-    T = [] # contain all points
+
+#finding a cycle
+
+#cycle(W,points)
+def find(parent,rank,vertex):
+    if parent[vertex] == vertex:
+        return parent[vertex]
+    return find(parent, rank, parent[vertex])
+
+def union(parent,rank,root1,root2):
+    if rank[root1] > rank[root2]:
+        parent[root2] = root1
+    elif rank[root2] > rank[root1]:
+        parent[root1]=root2
+    else:
+        parent[root1] = root2
+        rank[root2] +=1
+
+def makeset(parent,rank,vertex):
+    parent[vertex] = vertex
+    rank[vertex] = 0
+
+
+def MST(W,points):
+    A=[]
+    rank = [-1 for i in range(len(points))] #disjoint set rank
+    parent = [-1 for i in range(len(points))] # disjoint set
+    for i in range(len(points)):
+        makeset(parent, rank,i)
     mergesort(W)
-    for edge in range(len(W)):
-        if (len(T) == len(points)) and (T == points): #if all the points are in the tree then break
-            break
-        if W[edge].p1 and W[edge].p2 in T:
-            continue
-        if W[edge].key not in A: # then add node
-            if W[edge].p1 not in T:
-                T.append(W[edge].p1)
-            if W[edge].p2 not in T:
-                T.append(W[edge].p2)
-            A.append(W[edge].key)
-    print ("A: %s"% (A))
-    print ("T: %s" %T)
+    for i in range(len(W)):
+        p1_index = p2_index = -1
+        for k in range(len(points)):
+            if W[i].p1 == points[k]:
+                p1_index = k# node key value
+                break
 
+        for k in range(len(points)):
+            if W[i].p2 == points[k]:
+                p2_index = k
+                break
+        root1 = find(parent,rank,p1_index)
+        root2 = find(parent, rank,p2_index)
+        if root1 != root2:
+            A.append(W[i])#.key
+            union(parent, rank, root1,root2)
 
-kruskal(W, points)
+    print("Edges in MST")
+    print("Point [x,y]         Distance")
+    total_distance =0
+    for i in range(len(A)):
+        A[i].format()
+        total_distance += A[i].distance
+    print("         Total distance %s"% total_distance)
+    #print("A: %s"% A)
+MST(W,points)
+
+#kruskal(W, points)
 def main():
     pass
